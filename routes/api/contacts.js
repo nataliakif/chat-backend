@@ -7,10 +7,17 @@ const {
   joiSchema,
   joiPatchFavoriteSchema,
 } = require("../../models/contact");
+const auth = require("../../middlewares/auth");
 
-router.get("/", async (req, res, next) => {
+router.get("/", auth, async (req, res, next) => {
   try {
-    const contacts = await Contact.find({});
+    const { _id } = req.user;
+    const { page = 1, limit = 10, favorite = false } = req.query;
+    const skip = (page - 1) * limit;
+    const contacts = await Contact.find({ owner: _id, favorite }, "", {
+      skip,
+      limit: Number(limit),
+    });
     if (!contacts) {
       throw new NotFound(`Not found`);
     }
@@ -21,6 +28,7 @@ router.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
 router.get("/:contactId", async (req, res, next) => {
   try {
     const { contactId } = req.params;
@@ -36,14 +44,17 @@ router.get("/:contactId", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", auth, async (req, res, next) => {
   try {
+    const { _id } = req.user;
+    console.log(_id);
     const body = req.body;
     const { error } = joiSchema.validate(body);
     if (error) {
       throw new BadRequest(` ${error} field`);
     }
-    const newContact = await Contact.create(body);
+    const newContact = await Contact.create({ ...body, owner: _id });
+    console.log(newContact);
     res.status(201).json(newContact);
   } catch (error) {
     next(error);
