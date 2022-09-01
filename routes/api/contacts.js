@@ -1,13 +1,13 @@
 const express = require("express");
-const router = express.Router();
-const { NotFound, BadRequest } = require("http-errors");
-
-const {
-  Contact,
-  joiSchema,
-  joiPatchFavoriteSchema,
-} = require("../../models/contact");
+const ctrl = require("../../controllers/contacts/");
 const auth = require("../../middlewares/auth");
+const { joiSchema, joiPatchFavoriteSchema } = require("../../models/contact");
+const validateBody = require("../../middlewares/validationBody");
+
+const { Contact } = require("../../models/contact");
+const { NotFound } = require("http-errors");
+
+const router = express.Router();
 
 router.get("/", auth, async (req, res, next) => {
   try {
@@ -44,80 +44,16 @@ router.get("/:contactId", async (req, res, next) => {
   }
 });
 
-router.post("/", auth, async (req, res, next) => {
-  try {
-    const { _id } = req.user;
-    console.log(_id);
-    const body = req.body;
-    const { error } = joiSchema.validate(body);
-    if (error) {
-      throw new BadRequest(` ${error} field`);
-    }
-    const newContact = await Contact.create({ ...body, owner: _id });
-    console.log(newContact);
-    res.status(201).json(newContact);
-  } catch (error) {
-    next(error);
-  }
-});
+router.post("/", auth, validateBody(joiSchema), ctrl.addContact);
 
-router.put("/:contactId", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const body = req.body;
+router.put("/:contactId", validateBody(joiSchema), ctrl.updateContact);
 
-    const { error } = joiSchema.validate(body);
-    if (error) {
-      throw new BadRequest(` ${error} field`);
-    }
-    const result = await Contact.findByIdAndUpdate(contactId, body, {
-      new: true,
-    });
-    if (!result) {
-      console.log(result);
-      throw new NotFound(`User with id ${contactId} was not found`);
-    }
-    res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+router.patch(
+  "/:contactId/favorite",
+  validateBody(joiPatchFavoriteSchema),
+  ctrl.updateFavorite
+);
 
-router.patch("/:contactId/favorite", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const body = req.body;
-
-    const { error } = joiPatchFavoriteSchema.validate(body);
-    if (error) {
-      res.status(400).json("missing field favorite");
-    }
-    const result = Contact.findByIdAndUpdate(contactId, body);
-    if (!result) {
-      throw new NotFound(`User with id ${contactId} was not found`);
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.delete("/:contactId", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-
-    console.log(contactId);
-    const result = await Contact.findByIdAndRemove(contactId);
-
-    if (!result) {
-      res.status(404).json(`User with id ${contactId} was not found`);
-    }
-    res
-      .status(204)
-      .json({ message: `User with id ${contactId} has been deleted`, result });
-  } catch (error) {
-    res.json({ error: error.massage });
-  }
-});
+router.delete("/:contactId", ctrl.deleteContact);
 
 module.exports = router;
