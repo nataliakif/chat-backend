@@ -16,4 +16,4 @@ const getById = async (req, res, next) => {
   }
 };
 
-exports.module = getById;
+module.exports = getById;
