@@ -4,6 +4,7 @@ const { User } = require("../../models/user");
 
 const SignUp = async (req, res, next) => {
   try {
+    console.log(res.body, res.authorization);
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (user) {
