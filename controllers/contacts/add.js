@@ -5,7 +5,6 @@ const addContact = async (req, res, next) => {
     const { _id } = req.user;
     const body = req.body;
     const newContact = await Contact.create({ ...body, owner: _id });
-    console.log(newContact);
     res.status(201).json(newContact);
   } catch (error) {
     next(error);
