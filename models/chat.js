@@ -1,7 +1,6 @@
 const { Schema, model } = require("mongoose");
-const Joi = require("joi");
 
-const messageSchema = Schema({
+const messageSchema = new Schema({
   sender: {
     type: String,
     enum: ["user", "bot"],
@@ -17,45 +16,29 @@ const messageSchema = Schema({
   },
 });
 
-const chatSchema = Schema({
-  firstName: {
-    type: String,
-    required: [true, "Set first name for chat"],
+const chatSchema = new Schema(
+  {
+    firstName: {
+      type: String,
+      required: [true, "Set first name for chat"],
+    },
+    lastName: {
+      type: String,
+      required: [true, "Set last name for chat"],
+    },
+    messages: [messageSchema],
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: false,
+      default: null,
+    },
+    isDefault: { type: Boolean, default: false },
+    isOnline: { type: Boolean, default: false },
   },
-  lastName: {
-    type: String,
-    required: [true, "Set last name for chat"],
-  },
-  messages: [messageSchema],
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: "user",
-    required: false,
-    default: null,
-  },
-
-  isDefault: { type: Boolean, default: false },
-  isOnline: { type: Boolean, default: false },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-const joiChatSchema = Joi.object({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-});
-
-const joiMessageSchema = Joi.object({
-  text: Joi.string().required(),
-  sender: Joi.string().valid("user", "bot").required(),
-});
+  { timestamps: true }
+);
 
 const Chat = model("chat", chatSchema);
 
-module.exports = { Chat, joiChatSchema, joiMessageSchema };
+module.exports = { Chat };
