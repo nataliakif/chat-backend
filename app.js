@@ -8,7 +8,6 @@ const passport = require("passport");
 require("./config/passport");
 
 const chatsRouter = require("./routes/api/chats");
-const authRouter = require("./routes/api/users");
 const googleAuthRouter = require("./routes/api/authGoogle");
 
 const app = express();
@@ -41,7 +40,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // API routes
-app.use("/api/users", authRouter);
 app.use("/api/chats", chatsRouter);
 
 // Google OAuth routes
@@ -57,6 +55,8 @@ app.get("/api/me", (req, res) => {
     res.status(401).json({ message: "Not authenticated" });
   }
 });
+
+// Logout route
 app.get("/auth/logout", (req, res) => {
   req.logout(() => {
     res.redirect("http://localhost:3000"); // возвращаемся на фронтенд

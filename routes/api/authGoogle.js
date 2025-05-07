@@ -2,18 +2,18 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 
-// Запуск авторизации через Google
+// Start Google authentication
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// Callback от Google после логина
+// Google callback after login
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    // Успешный вход — перенаправляем на фронтенд
+    // Successful login — redirect to frontend
     res.redirect("http://localhost:3000/");
   }
 );
