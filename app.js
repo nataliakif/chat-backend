@@ -15,7 +15,8 @@ const app = express();
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 const corsOptions = {
-  origin: "https://chat070525-frontend.netlify.app",
+  origin: "http://localhost:3000",
+  // origin: "https://chat070525-frontend.netlify.app",
   credentials: true,
 };
 
@@ -30,8 +31,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      sameSite: "lax",
-      secure: false,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
     },
   })
 );
