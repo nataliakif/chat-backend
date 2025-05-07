@@ -13,8 +13,8 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    // Successful login — redirect to frontend
-    res.redirect("http://localhost:3000/");
+    // Redirect to frontend after successful login
+    res.redirect("https://chat070525-frontend.netlify.app/");
   }
 );
 
