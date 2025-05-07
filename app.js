@@ -15,8 +15,7 @@ const app = express();
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 const corsOptions = {
-  origin: "http://localhost:3000",
-  // origin: "https://chat070525-frontend.netlify.app",
+  origin: "https://chat070525-frontend.netlify.app",
   credentials: true,
 };
 
