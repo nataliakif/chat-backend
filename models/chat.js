@@ -30,8 +30,12 @@ const chatSchema = Schema({
   owner: {
     type: Schema.Types.ObjectId,
     ref: "user",
-    required: true,
+    required: false,
+    default: null,
   },
+
+  isDefault: { type: Boolean, default: false },
+  isOnline: { type: Boolean, default: false },
   createdAt: {
     type: Date,
     default: Date.now,

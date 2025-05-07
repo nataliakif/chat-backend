@@ -3,6 +3,7 @@ const getChatById = require("./getById");
 const addChat = require("./add");
 const deleteChat = require("./delete");
 const addMessageToChat = require("./addMessage");
+const updateChat = require("./update");
 
 module.exports = {
   getAllChats,
@@ -10,4 +11,5 @@ module.exports = {
   addChat,
   deleteChat,
   addMessageToChat,
+  updateChat,
 };

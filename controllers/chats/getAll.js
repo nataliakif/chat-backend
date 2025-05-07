@@ -3,23 +3,23 @@ const { NotFound } = require("http-errors");
 
 const getAllChats = async (req, res, next) => {
   try {
-    const { _id: owner } = req.user;
-    const { page = 1, limit = 10 } = req.query;
-    const skip = (page - 1) * limit;
+    let chats;
 
-    const chats = await Chat.find({ owner }, "", {
-      skip,
-      limit: Number(limit),
-    });
+    if (req.user) {
+      chats = await Chat.find({
+        $or: [{ owner: req.user._id }, { isDefault: true }],
+      });
+    } else {
+      chats = await Chat.find({ isDefault: true });
+    }
 
     if (!chats || chats.length === 0) {
       throw new NotFound("No chats found");
     }
 
-    res.json({
-      chats,
-    });
+    res.json({ chats });
   } catch (error) {
+    console.error("Error in getAllChats:", error.message);
     next(error);
   }
 };
