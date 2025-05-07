@@ -2,7 +2,6 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
-const { Chat } = require("./models/chat");
 
 const session = require("express-session");
 const passport = require("passport");
@@ -16,8 +15,7 @@ const app = express();
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 const corsOptions = {
-  origin: "http://localhost:3000",
-  credentials: true,
+  origin: ["http://localhost:3000", "https://chat070525-frontend.netlify.app"],
 };
 
 app.use(logger(formatsLogger));
@@ -74,8 +72,5 @@ app.use((err, req, res, next) => {
   const status = err.status || 500;
   res.status(status).json({ message: err.message });
 });
-app.get("/api/ping", async (req, res) => {
-  const chats = await Chat.find();
-  res.json({ count: chats.length, chats });
-});
+
 module.exports = app;
